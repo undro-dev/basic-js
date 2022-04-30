@@ -19,6 +19,7 @@ const { NotImplementedError } = require("../extensions/index.js");
  * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
  *
  */
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const englishLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const START_POSITION_CHARCODE = 65;
 function createArr(arr) {
@@ -28,7 +29,7 @@ function createArr(arr) {
   }
   return arr;
 }
-const array = createArr(Array.from({ length: englishLetters.length }, () => [...englishLetters]));
+const tabulaRecta = createArr(Array.from({ length: englishLetters.length }, () => [...englishLetters]));
 
 class VigenereCipheringMachine {
   constructor(isDirect = true) {
@@ -49,7 +50,7 @@ class VigenereCipheringMachine {
 
     for (let i = 0, n = 0; i < msgLength; i += 1, n += 1) {
       const messageChar = messageUCDried[i];
-      if (!~englishLetters.indexOf(messageChar)) {
+      if (!~alphabet.indexOf(messageChar)) {
         res.push(messageChar);
         n--;
         continue;
@@ -57,10 +58,10 @@ class VigenereCipheringMachine {
       const messageCharCode = messageChar.charCodeAt(0);
       const shiftedRowIndex = keyUCDried.charCodeAt(n % keyLength) - START_POSITION_CHARCODE;
       const shiftedCharIndex = messageCharCode - START_POSITION_CHARCODE;
-      res.push(array[shiftedRowIndex][shiftedCharIndex]);
+      res.push(tabulaRecta[shiftedRowIndex][shiftedCharIndex]);
     }
     if (this._reverseFlag === true) return res.reverse().join("");
-    return res.join();
+    return res.join("");
   }
   decrypt(encryptedMessage, key) {
     if (encryptedMessage == undefined || key == undefined) throw Error("Incorrect arguments!");
@@ -81,15 +82,15 @@ class VigenereCipheringMachine {
 
       const rowIndex = keyUCDried.charCodeAt(n % keyLength) - START_POSITION_CHARCODE;
 
-      const row = array[rowIndex];
+      const row = tabulaRecta[rowIndex];
 
-      if (!~englishLetters.indexOf(encryptedMessageChar)) {
+      if (!~alphabet.indexOf(encryptedMessageChar)) {
         res.push(encryptedMessageChar);
         n--;
         continue;
       }
       const targetIndex = row.indexOf(encryptedMessageChar);
-      const unshiftedRow = array[0];
+      const unshiftedRow = tabulaRecta[0];
       const trueChar = unshiftedRow[targetIndex];
 
       res.push(trueChar);
